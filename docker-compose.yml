@@ -1,26 +1,19 @@
+# -*- coding: utf-8 -*-
 version: '3.3'
 
 services:
 
   geoservice:
+    image: geoservice:latest
+    build: .
     container_name: geoservice
-    image: https://github.com/Mazicode/coding_challenge.git
     restart: on-failure
     environment:
-      - FLASK_ENV=production
+      - FLASK_ENV=app
     ports:
       - 5000:5000
     volumes:
       - ./geoservice
 
 
-  worker:
-    build:
-      context: ./
-    hostname: worker
-    entrypoint: celery
-    command: -A celery_app.celery worker --loglevel=info
-    volumes:
-      - ./geoservice
-    depends_on:
-      - geoservice
+

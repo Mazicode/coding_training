@@ -1,7 +1,9 @@
-from flask import Flask, request, jsonify, url_for
+# coding=utf8
+from flask import Flask, jsonify
 from app import utils, exceptions
 import geocoder
 from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable
 import asyncio
 import time
 
@@ -15,21 +17,18 @@ def transform(inputs):
     pairs = {}
     for input in inputs:
         if utils.is_location(input):
-            coordinates = geolocator.geocode(input)
-            pairs[input] = coordinates.latitude, coordinates.longitude
+            try:
+                coordinates = geolocator.geocode(input)
+                pairs[input] = coordinates.latitude, coordinates.longitude
+            except (GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable):
+                time.sleep(5)
         elif utils.is_coordinates(input):
-            location = geolocator.reverse(input)
-            pairs[input] = location.address
-            time.sleep(5)
+            try:
+                location = geolocator.reverse(input)
+                pairs[input] = location.address
+            except (GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable):
+                time.sleep(5)
     return pairs
-
-
-@asyncio.coroutine
-def introduce():
-    message = {
-        'Requesting': 'location formats conversion...',
-    }
-    return jsonify(message)
 
 
 @app.route('/')
@@ -39,19 +38,8 @@ def display():
     if process:
         return jsonify(message, ("{process}".format(**vars())))
     else:
-        raise exceptions.InvalidUsage(f"Something went wrong, please input a valid address or coordinates value",
+        raise exceptions.InvalidUsage(f"inputs were not valid addresses or coordinates",
                                       status_code=500)
-
-    # asyncio.set_event_loop(loop)
-    # # loop.run_until_complete(asyncio.gather(*task))
-    # tasks = [
-    #          asyncio.ensure_future(transform(utils.mixed_inputs))]
-
-    # try:
-    # process
-    # operation = loop.run_until_complete(asyncio.wait(tasks))
-    # finally:
-    # loop.close()
 
 
 if __name__ == '__main__':

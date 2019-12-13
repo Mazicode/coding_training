@@ -1,11 +1,12 @@
 Flask==1.1.1
-MarkupSafe==1.1.1
-Werkzeug==0.14.1
+Werkzeug==0.15
 geocoder==1.38.1
 geopy==1.20.0
 Flask-Env==2.0.0
 address-parser==1.0.0
 phonetics==1.0.5
 tox==3.14.2
-
-
+pytest==4.0.2
+attrs==19.1.0
+six==1.11.0
+virtualenv==16.0.0

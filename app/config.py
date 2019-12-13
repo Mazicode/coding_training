@@ -1,8 +1,7 @@
-# CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
-# CELERY_RESULT_BACKEND = 'amqp'
-# CELERY_TASK_SERIALIZER = 'json'
-#
-#
-# REDIS_URL = 'redis://:REDIS_PWD@REDIS_HOST:REDIS_PORT/0'
-# CELERY_BROKER_URL = REDIS_URL
-# CELERY_RESULT_BACKEND = REDIS_URL
+from flask import Flask
+
+
+def create_app():
+    app = Flask(__name__)
+
+    return app
