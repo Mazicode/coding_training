@@ -74,6 +74,3 @@ file:
 $ pytest tests/test_api.py
 ```
 
-Some environment variables may need to be set for running tests outside
-of tox. Refer to the `tox.ini` file to see exactly what these variables
-are.
