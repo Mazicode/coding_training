@@ -1,4 +1,4 @@
-# coding=utf8
+# - coding: utf-8 --
 from flask import Flask, jsonify
 from app import utils, exceptions
 import geocoder
@@ -21,13 +21,13 @@ def transform(inputs):
                 coordinates = geolocator.geocode(input)
                 pairs[input] = coordinates.latitude, coordinates.longitude
             except (GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable):
-                time.sleep(5)
+                time.sleep(2)
         elif utils.is_coordinates(input):
             try:
                 location = geolocator.reverse(input)
                 pairs[input] = location.address
             except (GeocoderTimedOut, GeocoderServiceError, GeocoderUnavailable):
-                time.sleep(5)
+                time.sleep(2)
     return pairs
 
 
@@ -37,9 +37,11 @@ def display():
     message = 'converting map locations'
     if process:
         return jsonify(message, ("{process}".format(**vars())))
-    else:
+    elif process == '':
         raise exceptions.InvalidUsage(f"inputs were not valid addresses or coordinates",
                                       status_code=500)
+    else:
+        raise exceptions.InvalidUsage(f"Internal error", status_code=500)
 
 
 if __name__ == '__main__':

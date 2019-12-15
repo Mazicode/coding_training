@@ -1,31 +1,26 @@
-from app.api import transform
+from app.api import transform, display, app
 from app.config import create_app
 import pytest
 import asyncio
+import time
 
-test_app = create_app()
-test_inputs = ['afsdgfsdg', '23472983765', 'random street 5']
+test_inputs = ['afsdgfsdg', 'H. C. Andersens Blvd. 27,'
+                            ' 1553 København V, Denmark', 'random street 5']
 
 
-@pytest.mark.asyncio
+@pytest.fixture
 def test_transform():
     process = asyncio.run(transform(test_inputs))
-    assert not process
+    assert process == {'H. C. Andersens Blvd. 27, 1553 København V, Denmark': (55.674136, 12.571782)}
 
 
+@pytest.fixture
 def test_display():
-    with test_app.test_client() as client:
-        test_inputs = ['afsdgfsdg', '23472983765', 'H. C. Andersens Blvd. 27, 1553 København V, Denmark']
-
-        run_task = asyncio.run(transform(test_inputs))
-        # test_transform(run_task)
-        result = ("{run_task}".format(**vars()))
-        if result:
-            resp = client.get('/')
-            assert resp.status == 200
-
-            parsed_resp = resp.get_json()
-            assert resp.status == 200
-            assert parsed_resp == 'Alberti'
-            assert test_task and parsed_resp == test_task
-
+    with app.test_client() as client:
+        resp_false = client.get('/results')
+        resp_true = client.get('/')
+        assert resp_false.status_code == 404, resp_false
+        time.sleep(8)
+        assert resp_true.status_code == 200, resp_true
+        parsed_resp = resp_true.get_json()
+        assert parsed_resp != ''
